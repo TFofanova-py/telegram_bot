@@ -64,3 +64,31 @@ def handle_message(msg):
 
 
 bot.polling(none_stop=True)
+
+# подкдючимся к api яндекс.диска
+
+import pandas as pd
+import requests
+import urllib
+import json
+import io
+
+api_url = 'https://cloud-api.yandex.net/v1/disk/public/resources?public_key='
+
+# Важно! ниже ссылка на файл, с которым мы работаем, её нужно поменять, пока я залила тестовый файл
+source_url = urllib.parse.quote_plus('https://disk.yandex.ru/d/pnJSIkrpcEmGHg')
+
+url_file = api_url + source_url
+
+# Запрашиваю урл 
+req_url = requests.get(url_file) 
+
+# Распарсим полученный урл и выделим урл загрузки
+download_url = json.loads(req_url.text)['file'] 
+
+# Создаем датафрейм
+# Важно! уточнить у Лёши название листа и диапазон, который хотим залить в датафрейм. Или при построении графика - поменять диапазон
+xl_df = pd.read_excel(download_url, sheet_name = 'sheet_1')
+
+
+
