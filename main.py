@@ -10,7 +10,7 @@ bot = telebot.TeleBot(token)
 # напишем, что делать нашему боту при команде старт
 @bot.message_handler(commands=["start", "help"])
 def send_keyboard(message, text="Привет, чем я могу тебе помочь?"):
-    keyboard = types.ReplyKeyboardMarkup()  # наша клавиатура
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)  # наша клавиатура
     itembtn1 = types.KeyboardButton("Поместить логотип на картинку")  # создадим кнопку
     keyboard.add(itembtn1)  # добавим кнопку
 
@@ -23,8 +23,10 @@ def send_keyboard(message, text="Привет, чем я могу тебе по�
 
 def callback_worker(call):
     if call.text == "Поместить логотип на картинку":
-        msg = bot.send_message(call.chat.id, 'Отлично, загрузите фото')
+        msg = bot.send_message(call.chat.id, 'Отлично, загрузи фото')
         bot.register_next_step_handler(msg, add_logo)
+    else:
+        msg = bot.send_message(call.chat.id, text="Не понимаю(")
 
 
 # добавление логотипа на картинку
@@ -45,6 +47,7 @@ def add_logo(msg):
     width, height = im.size
     im.paste(logo_im, tuple([width - logo_width, height - logo_height, width, height]))
     bot.send_photo(msg.chat.id, im)
+    send_keyboard(msg, "Чем еще могу помочь?")
 
     os.remove(f"pic{msg.from_user.id}.jpg")
 
